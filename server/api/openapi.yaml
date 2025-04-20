@@ -1,0 +1,84 @@
+openapi: 3.0.3
+info:
+  description: |
+    An API that allows uploading a plain text document and querying it for relevant snippets using fuzzy search.
+  title: Search API
+  version: 1.0.0
+servers:
+- description: Local development server
+  url: http://localhost:8080
+paths:
+  /upload:
+    post:
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              $ref: '#/components/schemas/_upload_post_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_upload_post_200_response'
+          description: File uploaded successfully
+        "400":
+          description: Bad request (e.g. no file provided)
+      summary: Upload a text file
+  /query:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_query_post_request'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_query_post_200_response'
+          description: Query results returned
+        "400":
+          description: Bad request (e.g. empty query or no file uploaded yet)
+      summary: Query the uploaded document
+components:
+  schemas:
+    _upload_post_request:
+      properties:
+        file:
+          description: The plain text file to upload
+          format: binary
+          type: string
+      type: object
+    _upload_post_200_response:
+      example:
+        message: File uploaded successfully
+      properties:
+        message:
+          example: File uploaded successfully
+          type: string
+      type: object
+    _query_post_request:
+      properties:
+        query:
+          description: The query string
+          example: renewable energy storage
+          type: string
+      type: object
+    _query_post_200_response:
+      example:
+        results:
+        - Snippet 1
+        - Snippet 2
+      properties:
+        results:
+          example:
+          - Snippet 1
+          - Snippet 2
+          items:
+            type: string
+          type: array
+      type: object
