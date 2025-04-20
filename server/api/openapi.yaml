@@ -9,41 +9,86 @@ servers:
   url: http://localhost:8080/api/v1
 paths:
   /upload:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
     post:
+      summary: Upload a text file
       requestBody:
+        required: true
         content:
           multipart/form-data:
             schema:
               $ref: '#/components/schemas/_upload_post_request'
-        required: true
       responses:
-        "200":
+        '200':
+          description: File uploaded successfully
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/_upload_post_200_response'
-          description: File uploaded successfully
-        "400":
+        '400':
           description: Bad request (e.g. no file provided)
-      summary: Upload a text file
+
   /query:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
     post:
+      summary: Query the uploaded document
       requestBody:
+        required: true
         content:
           application/json:
             schema:
               $ref: '#/components/schemas/_query_post_request'
-        required: true
       responses:
-        "200":
+        '200':
+          description: Query results returned
           content:
             application/json:
               schema:
                 $ref: '#/components/schemas/_query_post_200_response'
-          description: Query results returned
-        "400":
+        '400':
           description: Bad request (e.g. empty query or no file uploaded yet)
-      summary: Query the uploaded document
 components:
   schemas:
     _upload_post_request:

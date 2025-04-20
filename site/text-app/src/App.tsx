@@ -1,20 +1,22 @@
 import { useState } from 'react'
-import { DefaultApi } from './api'
+import { DefaultApi, QueryPostRequest } from './api'
 import './App.css'
 
-import { Configuration } from './api/configuration';
-
-const config = new Configuration({ basePath: 'http://localhost:8080/api/v1' });
-const api = new DefaultApi(config);
+const api = new DefaultApi();
 
 function App() {
   const [results, setResults] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
 
   const handleQuery = async () => {
+    console.log('Querying...');
     setLoading(true);
     try {
-      const { data } = await api.queryPost({ query: 'banana' });
+      console.log('Running query...');
+      const params: QueryPostRequest = {
+        query: 'banana'
+      };
+      const { data } = await api.queryPost({ queryPostRequest: params });
       setResults(data.results || []);
     } catch (error) {
       console.error('Query failed', error);
