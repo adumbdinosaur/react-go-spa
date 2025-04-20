@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Search API
- * An API that allows uploading a plain text document and querying it for relevant snippets using fuzzy search. 
+ * An API that allows uploading a plain text document, querying it for relevant snippets using fuzzy search, and managing user authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -23,6 +23,38 @@ import type { RequestArgs } from './base';
 // @ts-ignore
 import { BASE_PATH, COLLECTION_FORMATS, BaseAPI, RequiredError, operationServerMap } from './base';
 
+/**
+ * 
+ * @export
+ * @interface LoginPost200Response
+ */
+export interface LoginPost200Response {
+    /**
+     * The JWT token for the authenticated user
+     * @type {string}
+     * @memberof LoginPost200Response
+     */
+    'token'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface LoginPostRequest
+ */
+export interface LoginPostRequest {
+    /**
+     * The username of the user
+     * @type {string}
+     * @memberof LoginPostRequest
+     */
+    'username'?: string;
+    /**
+     * The password of the user
+     * @type {string}
+     * @memberof LoginPostRequest
+     */
+    'password'?: string;
+}
 /**
  * 
  * @export
@@ -48,6 +80,50 @@ export interface QueryPostRequest {
      * @memberof QueryPostRequest
      */
     'query'?: string;
+    /**
+     * The name of the file to search
+     * @type {string}
+     * @memberof QueryPostRequest
+     */
+    'fileName'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface RegisterPost201Response
+ */
+export interface RegisterPost201Response {
+    /**
+     * A success message
+     * @type {string}
+     * @memberof RegisterPost201Response
+     */
+    'message'?: string;
+    /**
+     * The JWT token for the authenticated user
+     * @type {string}
+     * @memberof RegisterPost201Response
+     */
+    'token'?: string;
+}
+/**
+ * 
+ * @export
+ * @interface RegisterPostRequest
+ */
+export interface RegisterPostRequest {
+    /**
+     * The username for the new user
+     * @type {string}
+     * @memberof RegisterPostRequest
+     */
+    'username'?: string;
+    /**
+     * The password for the new user
+     * @type {string}
+     * @memberof RegisterPostRequest
+     */
+    'password'?: string;
 }
 /**
  * 
@@ -62,6 +138,19 @@ export interface UploadPost200Response {
      */
     'message'?: string;
 }
+/**
+ * 
+ * @export
+ * @interface UserFilesGet200Response
+ */
+export interface UserFilesGet200Response {
+    /**
+     * List of files owned by the user
+     * @type {Array<string>}
+     * @memberof UserFilesGet200Response
+     */
+    'files'?: Array<string>;
+}
 
 /**
  * DefaultApi - axios parameter creator
@@ -69,6 +158,102 @@ export interface UploadPost200Response {
  */
 export const DefaultApiAxiosParamCreator = function (configuration?: Configuration) {
     return {
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginOptions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'OPTIONS', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Login a user
+         * @param {LoginPostRequest} loginPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginPost: async (loginPostRequest: LoginPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'loginPostRequest' is not null or undefined
+            assertParamExists('loginPost', 'loginPostRequest', loginPostRequest)
+            const localVarPath = `/login`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(loginPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        queryOptions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/query`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'OPTIONS', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
         /**
          * 
          * @summary Query the uploaded document
@@ -87,18 +272,114 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
 
 
-
+    
             localVarHeaderParameter['Content-Type'] = 'application/json';
 
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(queryPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerOptions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/register`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'OPTIONS', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Register a new user
+         * @param {RegisterPostRequest} registerPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerPost: async (registerPostRequest: RegisterPostRequest, options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            // verify required parameter 'registerPostRequest' is not null or undefined
+            assertParamExists('registerPost', 'registerPostRequest', registerPostRequest)
+            const localVarPath = `/register`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            localVarHeaderParameter['Content-Type'] = 'application/json';
+
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = serializeDataIfNeeded(registerPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadOptions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/upload`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'OPTIONS', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -121,23 +402,87 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
                 baseOptions = configuration.baseOptions;
             }
 
-            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options };
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
             const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
 
 
-            if (file !== undefined) {
+            if (file !== undefined) { 
                 localVarFormParams.append('file', file as any);
             }
-
-
+    
+    
             localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
-
+    
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
-            localVarRequestOptions.headers = { ...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers };
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = localVarFormParams;
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * 
+         * @summary Get the list of files owned by the authenticated user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userFilesGet: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user/files`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'GET', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+            // authentication bearerAuth required
+            // http bearer authentication required
+            await setBearerAuthToObject(localVarHeaderParameter, configuration)
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userFilesOptions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/user/files`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'OPTIONS', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -151,9 +496,46 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
  * DefaultApi - functional programming interface
  * @export
  */
-export const DefaultApiFp = function (configuration?: Configuration) {
+export const DefaultApiFp = function(configuration?: Configuration) {
     const localVarAxiosParamCreator = DefaultApiAxiosParamCreator(configuration)
     return {
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async loginOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginOptions(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.loginOptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Login a user
+         * @param {LoginPostRequest} loginPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async loginPost(loginPostRequest: LoginPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LoginPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.loginPost(loginPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.loginPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async queryOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.queryOptions(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.queryOptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
         /**
          * 
          * @summary Query the uploaded document
@@ -165,6 +547,43 @@ export const DefaultApiFp = function (configuration?: Configuration) {
             const localVarAxiosArgs = await localVarAxiosParamCreator.queryPost(queryPostRequest, options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.queryPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async registerOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerOptions(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.registerOptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * 
+         * @summary Register a new user
+         * @param {RegisterPostRequest} registerPostRequest 
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async registerPost(registerPostRequest: RegisterPostRequest, options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<RegisterPost201Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.registerPost(registerPostRequest, options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.registerPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async uploadOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.uploadOptions(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.uploadOptions']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
         /**
@@ -180,6 +599,30 @@ export const DefaultApiFp = function (configuration?: Configuration) {
             const localVarOperationServerBasePath = operationServerMap['DefaultApi.uploadPost']?.[localVarOperationServerIndex]?.url;
             return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
         },
+        /**
+         * 
+         * @summary Get the list of files owned by the authenticated user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async userFilesGet(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<UserFilesGet200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userFilesGet(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.userFilesGet']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async userFilesOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.userFilesOptions(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.userFilesOptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
     }
 };
 
@@ -191,6 +634,34 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
     const localVarFp = DefaultApiFp(configuration)
     return {
         /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.loginOptions(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Login a user
+         * @param {DefaultApiLoginPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        loginPost(requestParameters: DefaultApiLoginPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<LoginPost200Response> {
+            return localVarFp.loginPost(requestParameters.loginPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        queryOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.queryOptions(options).then((request) => request(axios, basePath));
+        },
+        /**
          * 
          * @summary Query the uploaded document
          * @param {DefaultApiQueryPostRequest} requestParameters Request parameters.
@@ -199,6 +670,34 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          */
         queryPost(requestParameters: DefaultApiQueryPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<QueryPost200Response> {
             return localVarFp.queryPost(requestParameters.queryPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.registerOptions(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * 
+         * @summary Register a new user
+         * @param {DefaultApiRegisterPostRequest} requestParameters Request parameters.
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        registerPost(requestParameters: DefaultApiRegisterPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<RegisterPost201Response> {
+            return localVarFp.registerPost(requestParameters.registerPostRequest, options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        uploadOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.uploadOptions(options).then((request) => request(axios, basePath));
         },
         /**
          * 
@@ -210,6 +709,24 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
         uploadPost(requestParameters: DefaultApiUploadPostRequest = {}, options?: RawAxiosRequestConfig): AxiosPromise<UploadPost200Response> {
             return localVarFp.uploadPost(requestParameters.file, options).then((request) => request(axios, basePath));
         },
+        /**
+         * 
+         * @summary Get the list of files owned by the authenticated user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userFilesGet(options?: RawAxiosRequestConfig): AxiosPromise<UserFilesGet200Response> {
+            return localVarFp.userFilesGet(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        userFilesOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.userFilesOptions(options).then((request) => request(axios, basePath));
+        },
     };
 };
 
@@ -219,6 +736,34 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
  * @interface DefaultApi
  */
 export interface DefaultApiInterface {
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    loginOptions(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @summary Login a user
+     * @param {DefaultApiLoginPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    loginPost(requestParameters: DefaultApiLoginPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<LoginPost200Response>;
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    queryOptions(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
     /**
      * 
      * @summary Query the uploaded document
@@ -230,6 +775,34 @@ export interface DefaultApiInterface {
     queryPost(requestParameters: DefaultApiQueryPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<QueryPost200Response>;
 
     /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    registerOptions(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * 
+     * @summary Register a new user
+     * @param {DefaultApiRegisterPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    registerPost(requestParameters: DefaultApiRegisterPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<RegisterPost201Response>;
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    uploadOptions(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
      * 
      * @summary Upload a text file
      * @param {DefaultApiUploadPostRequest} requestParameters Request parameters.
@@ -239,6 +812,38 @@ export interface DefaultApiInterface {
      */
     uploadPost(requestParameters?: DefaultApiUploadPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<UploadPost200Response>;
 
+    /**
+     * 
+     * @summary Get the list of files owned by the authenticated user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    userFilesGet(options?: RawAxiosRequestConfig): AxiosPromise<UserFilesGet200Response>;
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    userFilesOptions(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+}
+
+/**
+ * Request parameters for loginPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiLoginPostRequest
+ */
+export interface DefaultApiLoginPostRequest {
+    /**
+     * 
+     * @type {LoginPostRequest}
+     * @memberof DefaultApiLoginPost
+     */
+    readonly loginPostRequest: LoginPostRequest
 }
 
 /**
@@ -253,6 +858,20 @@ export interface DefaultApiQueryPostRequest {
      * @memberof DefaultApiQueryPost
      */
     readonly queryPostRequest: QueryPostRequest
+}
+
+/**
+ * Request parameters for registerPost operation in DefaultApi.
+ * @export
+ * @interface DefaultApiRegisterPostRequest
+ */
+export interface DefaultApiRegisterPostRequest {
+    /**
+     * 
+     * @type {RegisterPostRequest}
+     * @memberof DefaultApiRegisterPost
+     */
+    readonly registerPostRequest: RegisterPostRequest
 }
 
 /**
@@ -277,6 +896,40 @@ export interface DefaultApiUploadPostRequest {
  */
 export class DefaultApi extends BaseAPI implements DefaultApiInterface {
     /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public loginOptions(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).loginOptions(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Login a user
+     * @param {DefaultApiLoginPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public loginPost(requestParameters: DefaultApiLoginPostRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).loginPost(requestParameters.loginPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public queryOptions(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).queryOptions(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 
      * @summary Query the uploaded document
      * @param {DefaultApiQueryPostRequest} requestParameters Request parameters.
@@ -289,6 +942,40 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
     }
 
     /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public registerOptions(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).registerOptions(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Register a new user
+     * @param {DefaultApiRegisterPostRequest} requestParameters Request parameters.
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public registerPost(requestParameters: DefaultApiRegisterPostRequest, options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).registerPost(requestParameters.registerPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public uploadOptions(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).uploadOptions(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
      * 
      * @summary Upload a text file
      * @param {DefaultApiUploadPostRequest} requestParameters Request parameters.
@@ -298,6 +985,28 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      */
     public uploadPost(requestParameters: DefaultApiUploadPostRequest = {}, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).uploadPost(requestParameters.file, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * 
+     * @summary Get the list of files owned by the authenticated user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public userFilesGet(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).userFilesGet(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public userFilesOptions(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).userFilesOptions(options).then((request) => request(this.axios, this.basePath));
     }
 }
 

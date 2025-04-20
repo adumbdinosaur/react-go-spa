@@ -2,7 +2,7 @@
 /* eslint-disable */
 /**
  * Search API
- * An API that allows uploading a plain text document and querying it for relevant snippets using fuzzy search. 
+ * An API that allows uploading a plain text document, querying it for relevant snippets using fuzzy search, and managing user authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
