@@ -1,33 +1,46 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import { DefaultApi } from './api'
 import './App.css'
 
+import { Configuration } from './api/configuration';
+
+const config = new Configuration({ basePath: 'http://localhost:8080/api/v1' });
+const api = new DefaultApi(config);
+
 function App() {
-  const [count, setCount] = useState(0)
+  const [results, setResults] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
+
+  const handleQuery = async () => {
+    setLoading(true);
+    try {
+      const { data } = await api.queryPost({ query: 'banana' });
+      setResults(data.results || []);
+    } catch (error) {
+      console.error('Query failed', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+      <div style={{ padding: '2rem' }}>
+        <h1>Search</h1>
+        <button onClick={handleQuery} disabled={loading}>
+          {loading ? 'Querying...' : 'Run Query'}
         </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
+
+        <div style={{ marginTop: '1rem' }}>
+          <h2>Results:</h2>
+          <ul>
+            {results.map((snippet, index) => (
+              <li key={index}>{snippet}</li>
+            ))}
+          </ul>
+        </div>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
     </>
   )
 }

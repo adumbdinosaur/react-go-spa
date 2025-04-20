@@ -14,7 +14,7 @@ import (
 	"log"
 	"net/http"
 
-	openapi "github.com/adumbdinosaur/react-go-spa/server/pkg/api"
+	openapi "github.com/adumbdinosaur/react-go-spa/server/pkg/api/v1"
 )
 
 func main() {
