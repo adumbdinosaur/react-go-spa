@@ -1,16 +1,36 @@
 openapi: 3.0.3
 info:
+  description: |
+    An API that allows uploading a plain text document, querying it for relevant snippets using fuzzy search, and managing user authentication.
   title: Search API
   version: 1.0.0
-  description: |
-    An API that allows uploading a plain text document and querying it for relevant snippets using fuzzy search.
-
 servers:
-  - url: http://localhost:8080
-    description: Local development server
-
+- description: Local development server
+  url: http://localhost:8080/api/v1
 paths:
   /upload:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
     post:
       summary: Upload a text file
       requestBody:
@@ -18,27 +38,40 @@ paths:
         content:
           multipart/form-data:
             schema:
-              type: object
-              properties:
-                file:
-                  type: string
-                  format: binary
-                  description: The plain text file to upload
+              $ref: '#/components/schemas/_upload_post_request'
       responses:
         '200':
           description: File uploaded successfully
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  message:
-                    type: string
-                    example: File uploaded successfully
+                $ref: '#/components/schemas/_upload_post_200_response'
         '400':
           description: Bad request (e.g. no file provided)
-  
+
   /query:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
     post:
       summary: Query the uploaded document
       requestBody:
@@ -46,27 +79,245 @@ paths:
         content:
           application/json:
             schema:
-              type: object
-              properties:
-                query:
-                  type: string
-                  description: The query string
-                  example: renewable energy storage
+              $ref: '#/components/schemas/_query_post_request'
       responses:
         '200':
           description: Query results returned
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      type: string
-                    example: ["Snippet 1", "Snippet 2"]
+                $ref: '#/components/schemas/_query_post_200_response'
         '400':
-          description: Bad request (e.g. empty query or no file uploaded yet)
+          description: Bad request (e.g. empty query, no file uploaded yet, or file not found)
+
+  /register:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_register_post_request'
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_register_post_201_response'
+        '400':
+          description: Bad request (e.g. missing username or password)
+        '409':
+          description: Conflict (e.g. user already exists)
+
+  /login:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
+    post:
+      summary: Login a user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/_login_post_request'
+      responses:
+        '200':
+          description: User logged in successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_login_post_200_response'
+        '400':
+          description: Bad request (e.g. missing username or password)
+        '401':
+          description: Unauthorized (e.g. invalid credentials)
+
+  /user/files:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'GET, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Authorization, Content-Type'
+    get:
+      summary: Get the list of files owned by the authenticated user
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of user files
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/_user_files_get_200_response'
+        '401':
+          description: Unauthorized (e.g. missing or invalid token)
 
 components:
-  schemas: {}
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  schemas:
+    _upload_post_request:
+      properties:
+        file:
+          description: The plain text file to upload
+          format: binary
+          type: string
+      type: object
+    _upload_post_200_response:
+      example:
+        message: File uploaded successfully
+      properties:
+        message:
+          example: File uploaded successfully
+          type: string
+      type: object
+    _query_post_request:
+      properties:
+        query:
+          description: The query string
+          example: renewable energy storage
+          type: string
+        fileName:
+          description: The name of the file to search
+          example: document.txt
+          type: string
+      type: object
+    _query_post_200_response:
+      example:
+        results:
+        - Snippet 1
+        - Snippet 2
+      properties:
+        results:
+          example:
+          - Snippet 1
+          - Snippet 2
+          items:
+            type: string
+          type: array
+      type: object
+    _register_post_request:
+      properties:
+        username:
+          description: The username for the new user
+          example: johndoe
+          type: string
+        password:
+          description: The password for the new user
+          example: securepassword123
+          type: string
+      type: object
+    _register_post_201_response:
+      example:
+        message: User registered successfully
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      properties:
+        message:
+          description: A success message
+          example: User registered successfully
+          type: string
+        token:
+          description: The JWT token for the authenticated user
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+      type: object
+    _login_post_request:
+      properties:
+        username:
+          description: The username of the user
+          example: johndoe
+          type: string
+        password:
+          description: The password of the user
+          example: securepassword123
+          type: string
+      type: object
+    _login_post_200_response:
+      example:
+        token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      properties:
+        token:
+          description: The JWT token for the authenticated user
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+          type: string
+      type: object
+    _user_files_get_200_response:
+      example:
+        files:
+        - file1.txt
+        - file2.txt
+      properties:
+        files:
+          description: List of files owned by the user
+          example:
+          - file1.txt
+          - file2.txt
+          items:
+            type: string
+          type: array
+      type: object

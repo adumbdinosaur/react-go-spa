@@ -1,8 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
 /**
- *   Search API
- * An API that allows uploading a plain text document and querying it for relevant snippets using fuzzy search. 
+ * Search API
+ * An API that allows uploading a plain text document, querying it for relevant snippets using fuzzy search, and managing user authentication. 
  *
  * The version of the OpenAPI document: 1.0.0
  * 
@@ -19,7 +19,7 @@ import type { Configuration } from './configuration';
 import type { AxiosPromise, AxiosInstance, RawAxiosRequestConfig } from 'axios';
 import globalAxios from 'axios';
 
-export const BASE_PATH = "http://localhost:8080".replace(/\/+$/, "");
+export const BASE_PATH = "http://localhost:8080/api/v1".replace(/\/+$/, "");
 
 /**
  *
