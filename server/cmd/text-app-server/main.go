@@ -5,11 +5,11 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/rs/cors"
 
 	api "github.com/adumbdinosaur/react-go-spa/server/internal/api/v1/openapi"
 	"github.com/adumbdinosaur/react-go-spa/server/internal/api/v1/server"
 	"github.com/adumbdinosaur/react-go-spa/server/internal/auth"
+	"github.com/adumbdinosaur/react-go-spa/server/internal/middleware"
 )
 
 func main() {
@@ -25,13 +25,8 @@ func main() {
 func setupRouter(apiServer *server.Server) *mux.Router {
 	router := mux.NewRouter()
 
-	corsMiddleware := cors.New(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:5173"},
-		AllowCredentials: true,
-		AllowedMethods:   []string{"GET", "POST", "OPTIONS"},
-		AllowedHeaders:   []string{"*"},
-	}).Handler
-	router.Use(corsMiddleware)
+	router.Use(middleware.CorsMiddleware())
+	router.Use(middleware.SessionMiddleware())
 
 	api.HandlerWithOptions(*apiServer, api.GorillaServerOptions{
 		BaseURL:    "/api/v1",

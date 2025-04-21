@@ -4,15 +4,12 @@ import (
 	"encoding/json"
 	"net/http"
 	"sync"
-	"time"
 
-	"github.com/golang-jwt/jwt/v4"
 	"golang.org/x/crypto/bcrypt"
 
 	api "github.com/adumbdinosaur/react-go-spa/server/internal/api/v1/openapi"
+	"github.com/adumbdinosaur/react-go-spa/server/internal/middleware"
 )
-
-var jwtSecret = []byte("my_super_secure_key")
 
 type AuthService struct {
 	users map[string]string
@@ -58,21 +55,22 @@ func (a *AuthService) Register(w http.ResponseWriter, r *http.Request) {
 
 	a.users[*req.Username] = string(hashedPassword)
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": req.Username,
-		"exp":      time.Now().Add(24 * time.Hour).Unix(),
-	})
-
-	tokenString, err := token.SignedString(jwtSecret)
+	session, err := middleware.SessionStore.Get(r, middleware.SessionName)
 	if err != nil {
-		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		return
+	}
+
+	session.Values["username"] = *req.Username
+	session.Values["authenticated"] = true
+
+	if err := session.Save(r, w); err != nil {
+		http.Error(w, "Failed to save session", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusCreated)
-	json.NewEncoder(w).Encode(api.RegisterPost201Response{
-		Token: &tokenString})
 }
 
 func (a *AuthService) Login(w http.ResponseWriter, r *http.Request) {
@@ -106,55 +104,62 @@ func (a *AuthService) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"username": req.Username,
-		"exp":      time.Now().Add(24 * time.Hour).Unix(),
-	})
-
-	tokenString, err := token.SignedString(jwtSecret)
+	session, err := middleware.SessionStore.Get(r, middleware.SessionName)
 	if err != nil {
-		http.Error(w, "Failed to generate token", http.StatusInternalServerError)
+		http.Error(w, "Failed to create session", http.StatusInternalServerError)
+		return
+	}
+
+	session.Values["username"] = *req.Username
+	session.Values["authenticated"] = true
+
+	if err := session.Save(r, w); err != nil {
+		http.Error(w, "Failed to save session", http.StatusInternalServerError)
 		return
 	}
 
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(api.LoginPost200Response{
-		Token: &tokenString})
+}
+
+func (a *AuthService) LogOut(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+
+	session, err := middleware.SessionStore.Get(r, middleware.SessionName)
+	if err != nil {
+		http.Error(w, "Failed to get session", http.StatusInternalServerError)
+		return
+	}
+
+	session.Values["authenticated"] = false
+	session.Values["username"] = ""
+	session.Options.MaxAge = -1
+	if err := session.Save(r, w); err != nil {
+		http.Error(w, "Failed to clear session", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+
 }
 
 func (a *AuthService) Authenticate(r *http.Request) (string, error) {
-	authHeader := r.Header.Get("Authorization")
-	if authHeader == "" {
+	session, err := middleware.SessionStore.Get(r, middleware.SessionName)
+	if err != nil {
 		return "", http.ErrNoCookie
 	}
 
-	const bearerPrefix = "Bearer "
-	if len(authHeader) <= len(bearerPrefix) || authHeader[:len(bearerPrefix)] != bearerPrefix {
+	authenticated, ok := session.Values["authenticated"].(bool)
+	if !ok || !authenticated {
 		return "", http.ErrNoCookie
 	}
 
-	tokenString := authHeader[len(bearerPrefix):]
-
-	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
-		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-			return nil, jwt.ErrSignatureInvalid
-		}
-		return jwtSecret, nil
-	})
-
-	if err != nil || !token.Valid {
-		return "", jwt.ErrSignatureInvalid
-	}
-
-	claims, ok := token.Claims.(jwt.MapClaims)
-	if !ok {
-		return "", jwt.ErrSignatureInvalid
-	}
-
-	username, ok := claims["username"].(string)
-	if !ok {
-		return "", jwt.ErrSignatureInvalid
+	username, ok := session.Values["username"].(string)
+	if !ok || username == "" {
+		return "", http.ErrNoCookie
 	}
 
 	return username, nil

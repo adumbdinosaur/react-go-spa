@@ -1,27 +1,27 @@
 import { useState } from "react";
-import { DefaultApi, DefaultApiLoginPostRequest } from "../api/api";
-
-const API = new DefaultApi();
+import { DefaultApiLoginPostRequest } from "../api/api";
+import { useApi } from "../context/ApiContext";
 
 interface LoginProps {
     onLoginSuccess: () => void;
+    refreshFiles: () => Promise<void>;
 }
 
-export default function Login({ onLoginSuccess }: LoginProps) {
+export default function Login({ onLoginSuccess, refreshFiles }: LoginProps) {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const { api } = useApi();
 
     const handleLogin = async () => {
         try {
             const params: DefaultApiLoginPostRequest = {
                 loginPostRequest: { username, password },
             };
-            const { data } = await API.loginPost(params);
+            const response = await api.loginPost(params);
 
-            if (data.token) {
-                localStorage.setItem("authToken", data.token);
-                window.dispatchEvent(new Event("authTokenChanged"));
+            if (response.status === 200) {
+                await refreshFiles(); // Fetch and update the file list
                 onLoginSuccess();
             } else {
                 setError("Login failed. Please check your credentials.");

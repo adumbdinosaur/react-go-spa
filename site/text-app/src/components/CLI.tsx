@@ -19,7 +19,6 @@ export default function CLI({ setDisplayContent, selectedFile }: CLIProps) {
             clearTimeout(typingTimeoutRef.current);
         }
 
-
         typingTimeoutRef.current = setTimeout(() => {
             if (e.target.value.trim() !== "" && selectedFile) {
                 sendQuery(e.target.value);
@@ -41,22 +40,11 @@ export default function CLI({ setDisplayContent, selectedFile }: CLIProps) {
 
     const sendQuery = async (query: string) => {
         try {
-            const authToken = localStorage.getItem("authToken");
-            if (!authToken) {
-                setDisplayContent("Authentication token is missing. Please log in.");
-                return;
-            }
-
             const params: DefaultApiQueryPostRequest = {
                 queryPostRequest: { query, fileName: selectedFile! },
             };
 
-            const response = await api.queryPost(params, {
-                withCredentials: true,
-                headers: {
-                    Authorization: `Bearer ${authToken}`,
-                },
-            });
+            const response = await api.queryPost(params);
 
             setDisplayContent(response.data.results?.join("\n") || "No results found.");
         } catch (error) {

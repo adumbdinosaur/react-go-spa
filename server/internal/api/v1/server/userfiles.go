@@ -2,7 +2,6 @@ package server
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"os"
 	"path/filepath"
@@ -12,7 +11,7 @@ func (s Server) GetUserFiles(w http.ResponseWriter, r *http.Request) {
 	username, err := s.Authenticator.Authenticate(r)
 	if err != nil {
 		http.Error(w, `{"error":"unauthorized"}`, http.StatusUnauthorized)
-		fmt.Println(err.Error())
+		// fmt.Println(err.Error())
 		return
 	}
 

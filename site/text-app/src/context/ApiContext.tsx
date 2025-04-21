@@ -16,6 +16,9 @@ export const ApiProvider: React.FC<{ children: React.ReactNode }> = ({ children 
 
     const api = new DefaultApi(
         new Configuration({
+            baseOptions: {
+                withCredentials: true,
+            },
             accessToken: token || undefined,
         })
     );

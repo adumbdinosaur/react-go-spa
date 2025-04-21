@@ -20,45 +20,44 @@ function MainApp() {
   const [files, setFiles] = useState<string[]>([]);
   const [showAuthModal, setShowAuthModal] = useState<boolean>(false);
 
-  const { api, setToken } = useApi();
+  const { api } = useApi();
 
-  useEffect(() => {
-    const authToken = localStorage.getItem("authToken");
-    if (!authToken) {
-      setShowAuthModal(true);
-    } else {
-      setToken(authToken);
-    }
-  }, [setToken]);
-
-  useEffect(() => {
-    const fetchFiles = async () => {
-      try {
-        const response = await api.userFilesGet();
-        if (response.data.files) {
-          setFiles(response.data.files);
-        }
-      } catch (error) {
-        console.error("Error fetching files:", error);
+  const refreshFiles = async () => {
+    try {
+      const response = await api.userFilesGet();
+      if (response.data.files) {
+        setFiles(response.data.files);
       }
-    };
+    } catch (error) {
+      console.error("Error fetching files:", error);
+    }
+  };
 
-    fetchFiles();
+  useEffect(() => {
+    refreshFiles().catch(() => setShowAuthModal(true));
   }, [api]);
 
-  const handleAuthSuccess = (token: string) => {
-    localStorage.setItem("authToken", token);
-    setToken(token);
+  const handleAuthSuccess = async () => {
     setShowAuthModal(false);
+    await refreshFiles(); // Refresh files after successful authentication
+  };
+
+  const handleLogout = async () => {
+    try {
+      await api.logoutPost(); // Call the logout API
+      setShowAuthModal(true); // Show the authentication modal
+      setFiles([]); // Clear the file list
+      setSelectedFile(null); // Clear the selected file
+    } catch (error) {
+      console.error("Error during logout:", error);
+    }
   };
 
   return (
     <div style={{ height: "100vh", display: "flex", flexDirection: "column" }}>
-      {showAuthModal && (
-        <LoginRegister onAuthSuccess={handleAuthSuccess} />
-      )}
+      {showAuthModal && <LoginRegister onAuthSuccess={handleAuthSuccess} refreshFiles={refreshFiles} />}
       <div style={{ display: "flex", flex: 1, overflow: "hidden" }}>
-        <Sidebar setSelectedFile={setSelectedFile} files={files} />
+        <Sidebar setSelectedFile={setSelectedFile} files={files} onLogout={handleLogout} />
         <div className="main">
           <Display content={displayContent} />
           <CLI setDisplayContent={setDisplayContent} selectedFile={selectedFile} />

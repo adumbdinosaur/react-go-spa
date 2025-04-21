@@ -213,6 +213,46 @@ paths:
         '401':
           description: Unauthorized (e.g. missing or invalid token)
 
+  /logout:
+    options:
+      summary: CORS preflight
+      description: Responds to CORS preflight requests
+      responses:
+        '204':
+          description: No Content
+          headers:
+            Access-Control-Allow-Origin:
+              description: CORS allow origin
+              schema:
+                type: string
+              example: '*'
+            Access-Control-Allow-Methods:
+              description: CORS allowed methods
+              schema:
+                type: string
+              example: 'POST, OPTIONS'
+            Access-Control-Allow-Headers:
+              description: CORS allowed headers
+              schema:
+                type: string
+              example: 'Content-Type'
+    post:
+      summary: Log out the user
+      description: Invalidates the user's session and clears the session cookie.
+      responses:
+        '200':
+          description: User logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: User logged out successfully
+        '401':
+          description: Unauthorized (e.g., no active session)
+
 components:
   securitySchemes:
     bearerAuth:
