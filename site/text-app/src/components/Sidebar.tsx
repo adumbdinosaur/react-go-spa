@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { FileUpload } from "./FileUpload";
-import { useApi } from "../context/ApiContext";
 
 interface SidebarProps {
     setSelectedFile: (file: string) => void;

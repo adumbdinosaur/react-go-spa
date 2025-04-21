@@ -1,5 +1,5 @@
 /* tslint:disable */
-/* eslint-disable */
+ 
 /**
  * Search API
  * An API that allows uploading a plain text document, querying it for relevant snippets using fuzzy search, and managing user authentication. 
