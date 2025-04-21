@@ -39,15 +39,15 @@ function MainApp() {
 
   const handleAuthSuccess = async () => {
     setShowAuthModal(false);
-    await refreshFiles(); // Refresh files after successful authentication
+    await refreshFiles();
   };
 
   const handleLogout = async () => {
     try {
-      await api.logoutPost(); // Call the logout API
-      setShowAuthModal(true); // Show the authentication modal
-      setFiles([]); // Clear the file list
-      setSelectedFile(null); // Clear the selected file
+      await api.logoutPost();
+      setShowAuthModal(true);
+      setFiles([]);
+      setSelectedFile(null);
     } catch (error) {
       console.error("Error during logout:", error);
     }

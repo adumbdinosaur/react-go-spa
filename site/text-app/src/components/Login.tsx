@@ -21,7 +21,7 @@ export default function Login({ onLoginSuccess, refreshFiles }: LoginProps) {
             const response = await api.loginPost(params);
 
             if (response.status === 200) {
-                await refreshFiles(); // Fetch and update the file list
+                await refreshFiles();
                 onLoginSuccess();
             } else {
                 setError("Login failed. Please check your credentials.");

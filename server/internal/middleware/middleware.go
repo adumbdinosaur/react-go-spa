@@ -2,9 +2,11 @@ package middleware
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gorilla/sessions"
 	"github.com/rs/cors"
+	"github.com/rs/zerolog/log"
 )
 
 var SessionStore = sessions.NewCookieStore([]byte("my_super_secret_key"))
@@ -51,6 +53,26 @@ func SessionMiddleware() func(http.Handler) http.Handler {
 
 			// Proceed to the next handler
 			next.ServeHTTP(w, r)
+		})
+	}
+}
+
+func LoggingMiddleware() func(http.Handler) http.Handler {
+	return func(next http.Handler) http.Handler {
+		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			start := time.Now()
+			log.Info().
+				Str("method", r.Method).
+				Str("url", r.URL.String()).
+				Msg("Incoming request")
+
+			next.ServeHTTP(w, r)
+
+			log.Info().
+				Str("method", r.Method).
+				Str("url", r.URL.String()).
+				Dur("duration", time.Since(start)).
+				Msg("Request processed")
 		})
 	}
 }
