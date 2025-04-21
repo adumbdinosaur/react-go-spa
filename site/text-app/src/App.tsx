@@ -27,9 +27,12 @@ function MainApp() {
       const response = await api.userFilesGet();
       if (response.data.files) {
         setFiles(response.data.files);
+      } else {
+        throw new Error("Authentication required");
       }
     } catch (error) {
       console.error("Error fetching files:", error);
+      throw error; // Ensure the error propagates to the caller
     }
   };
 
