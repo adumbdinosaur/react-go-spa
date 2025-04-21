@@ -15,17 +15,8 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onFileUpload }) => {
             try {
                 const formData = new FormData();
                 formData.append("file", file);
-
-                const authToken = localStorage.getItem("authToken");
-
                 const response = await api.uploadPost(
                     { file },
-                    {
-                        withCredentials: true,
-                        headers: {
-                            Authorization: `Bearer ${authToken}`,
-                        },
-                    }
                 );
 
                 if (response.data.message) {

@@ -2,19 +2,20 @@ import { useState } from "react";
 import Login from "./Login";
 import Register from "./Register";
 
-interface LoginRegisterModalProps {
-    onAuthSuccess: (token: string) => void;
+interface LoginRegisterProps {
+    onAuthSuccess: () => void;
+    refreshFiles: () => Promise<void>;
 }
 
-export default function LoginRegisterModal({ onAuthSuccess }: LoginRegisterModalProps) {
+export default function LoginRegister({ onAuthSuccess, refreshFiles }: LoginRegisterProps) {
     const [isLogin, setIsLogin] = useState(true);
 
     const handleLoginSuccess = () => {
-        onAuthSuccess(localStorage.getItem("authToken") || "");
+        onAuthSuccess();
     };
 
-    const handleRegisterSuccess = (token: string) => {
-        onAuthSuccess(token);
+    const handleRegisterSuccess = () => {
+        onAuthSuccess();
     };
 
     return (
@@ -46,16 +47,12 @@ export default function LoginRegisterModal({ onAuthSuccess }: LoginRegisterModal
                 {isLogin ? (
                     <>
                         <h2 style={{ textAlign: "center" }}>Login</h2>
-                        <Login
-                            onLoginSuccess={handleLoginSuccess}
-                        />
+                        <Login onLoginSuccess={handleLoginSuccess} refreshFiles={refreshFiles} />
                     </>
                 ) : (
                     <>
                         <h2 style={{ textAlign: "center" }}>Register</h2>
-                        <Register
-                            onRegisterSuccess={handleRegisterSuccess}
-                        />
+                        <Register onRegisterSuccess={handleRegisterSuccess} />
                     </>
                 )}
                 <button

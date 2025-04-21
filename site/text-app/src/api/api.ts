@@ -58,6 +58,19 @@ export interface LoginPostRequest {
 /**
  * 
  * @export
+ * @interface LogoutPost200Response
+ */
+export interface LogoutPost200Response {
+    /**
+     * 
+     * @type {string}
+     * @memberof LogoutPost200Response
+     */
+    'message'?: string;
+}
+/**
+ * 
+ * @export
  * @interface QueryPost200Response
  */
 export interface QueryPost200Response {
@@ -218,6 +231,66 @@ export const DefaultApiAxiosParamCreator = function (configuration?: Configurati
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
             localVarRequestOptions.data = serializeDataIfNeeded(loginPostRequest, localVarRequestOptions, configuration)
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logoutOptions: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/logout`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'OPTIONS', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+
+            return {
+                url: toPathString(localVarUrlObj),
+                options: localVarRequestOptions,
+            };
+        },
+        /**
+         * Invalidates the user\'s session and clears the session cookie.
+         * @summary Log out the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logoutPost: async (options: RawAxiosRequestConfig = {}): Promise<RequestArgs> => {
+            const localVarPath = `/logout`;
+            // use dummy base URL string because the URL constructor only accepts absolute URLs.
+            const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
+            let baseOptions;
+            if (configuration) {
+                baseOptions = configuration.baseOptions;
+            }
+
+            const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
+            const localVarHeaderParameter = {} as any;
+            const localVarQueryParameter = {} as any;
+
+
+    
+            setSearchParams(localVarUrlObj, localVarQueryParameter);
+            let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
+            localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -530,6 +603,30 @@ export const DefaultApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        async logoutOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.logoutOptions(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.logoutOptions']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Invalidates the user\'s session and clears the session cookie.
+         * @summary Log out the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        async logoutPost(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<LogoutPost200Response>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.logoutPost(options);
+            const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
+            const localVarOperationServerBasePath = operationServerMap['DefaultApi.logoutPost']?.[localVarOperationServerIndex]?.url;
+            return (axios, basePath) => createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration)(axios, localVarOperationServerBasePath || basePath);
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         async queryOptions(options?: RawAxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<void>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.queryOptions(options);
             const localVarOperationServerIndex = configuration?.serverIndex ?? 0;
@@ -658,6 +755,24 @@ export const DefaultApiFactory = function (configuration?: Configuration, basePa
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
+        logoutOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
+            return localVarFp.logoutOptions(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Invalidates the user\'s session and clears the session cookie.
+         * @summary Log out the user
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
+        logoutPost(options?: RawAxiosRequestConfig): AxiosPromise<LogoutPost200Response> {
+            return localVarFp.logoutPost(options).then((request) => request(axios, basePath));
+        },
+        /**
+         * Responds to CORS preflight requests
+         * @summary CORS preflight
+         * @param {*} [options] Override http request option.
+         * @throws {RequiredError}
+         */
         queryOptions(options?: RawAxiosRequestConfig): AxiosPromise<void> {
             return localVarFp.queryOptions(options).then((request) => request(axios, basePath));
         },
@@ -754,6 +869,24 @@ export interface DefaultApiInterface {
      * @memberof DefaultApiInterface
      */
     loginPost(requestParameters: DefaultApiLoginPostRequest, options?: RawAxiosRequestConfig): AxiosPromise<LoginPost200Response>;
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    logoutOptions(options?: RawAxiosRequestConfig): AxiosPromise<void>;
+
+    /**
+     * Invalidates the user\'s session and clears the session cookie.
+     * @summary Log out the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApiInterface
+     */
+    logoutPost(options?: RawAxiosRequestConfig): AxiosPromise<LogoutPost200Response>;
 
     /**
      * Responds to CORS preflight requests
@@ -916,6 +1049,28 @@ export class DefaultApi extends BaseAPI implements DefaultApiInterface {
      */
     public loginPost(requestParameters: DefaultApiLoginPostRequest, options?: RawAxiosRequestConfig) {
         return DefaultApiFp(this.configuration).loginPost(requestParameters.loginPostRequest, options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Responds to CORS preflight requests
+     * @summary CORS preflight
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public logoutOptions(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).logoutOptions(options).then((request) => request(this.axios, this.basePath));
+    }
+
+    /**
+     * Invalidates the user\'s session and clears the session cookie.
+     * @summary Log out the user
+     * @param {*} [options] Override http request option.
+     * @throws {RequiredError}
+     * @memberof DefaultApi
+     */
+    public logoutPost(options?: RawAxiosRequestConfig) {
+        return DefaultApiFp(this.configuration).logoutPost(options).then((request) => request(this.axios, this.basePath));
     }
 
     /**

@@ -1,28 +1,26 @@
 import { useState } from "react";
-import { DefaultApi, DefaultApiRegisterPostRequest } from "../api/api";
-
-const API = new DefaultApi();
+import { DefaultApiRegisterPostRequest } from "../api/api";
+import { useApi } from "../context/ApiContext";
 
 interface RegisterProps {
-    onRegisterSuccess: (token: string) => void;
+    onRegisterSuccess: () => void;
 }
 
 export default function Register({ onRegisterSuccess }: RegisterProps) {
     const [username, setUsername] = useState<string>("");
     const [password, setPassword] = useState<string>("");
     const [error, setError] = useState<string | null>(null);
+    const { api } = useApi();
 
     const handleRegister = async () => {
         try {
             const params: DefaultApiRegisterPostRequest = {
                 registerPostRequest: { username, password },
             };
-            const { data } = await API.registerPost(params);
+            const response = await api.registerPost(params);
 
-            if (data.token) {
-                localStorage.setItem("authToken", data.token);
-                window.dispatchEvent(new Event("authTokenChanged"));
-                onRegisterSuccess(data.token);
+            if (response.status === 201) {
+                onRegisterSuccess();
             } else {
                 setError("Registration failed. Please try again.");
             }
