@@ -6,9 +6,9 @@ To run both the Go server and the React application concurrently, follow these s
    - [Go](https://golang.org/doc/install)
    - [Node.js and yarn](https://nodejs.org/)
 
-2. Make the `run-apps.sh` script executable (if not already):
+2. Make the `run.sh` script executable (if not already):
 ```bash
-chmod +x run-apps.sh
+chmod +x run.sh
 ``` 
 
 # Architecture and Design
